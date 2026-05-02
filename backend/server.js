@@ -10,7 +10,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-
 connectDB()
 .then(() => {
     console.log("Database connected successfully");
