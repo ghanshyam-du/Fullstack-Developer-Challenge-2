@@ -24,10 +24,11 @@ const login = async (req, res) => {
         );
 
         res.json({ token, role: user.role, name: user.name, id: user._id });
-        
+
         return res.status(200).json({ message: "login successful", token });
     }
     catch (error) {
         return res.status(500).json({ message: "internal server error" });
     }
 }
+export default { login };
