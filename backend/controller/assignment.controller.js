@@ -1,6 +1,6 @@
 import Assignment from "../model/assignment.model.js";
 
-const createAssignment = async (req, res) =>{
+export const createAssignment = async (req, res) =>{
     try{
         const {review, reviewer, reviewee} = req.body;
 
@@ -23,7 +23,7 @@ const createAssignment = async (req, res) =>{
 }
 
 
-const getMyAssignment = async (req, res)=>{
+export const getMyAssignment = async (req, res)=>{
     try{
         const assignements = await Assignment.find({ reviewer: req.user.userId }).populate("review", "title description").populate("reviewee", "name email");
         res.json(assignements);
@@ -34,7 +34,7 @@ const getMyAssignment = async (req, res)=>{
 
 
 
-const getAllAssignments = async (req, res) => {
+export const getAllAssignments = async (req, res) => {
     try{
         const assignements = await Assignment.find().populate("review", "title description").populate("reviewer", "name email").populate("reviewee", "name email");
         res.json(assignements);
@@ -43,4 +43,3 @@ const getAllAssignments = async (req, res) => {
     }
 };
 
-export default { createAssignment, getMyAssignment, getAllAssignments };

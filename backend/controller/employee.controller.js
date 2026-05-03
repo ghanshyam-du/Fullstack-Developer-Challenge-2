@@ -1,7 +1,7 @@
 import User from "../model/user.model.js";
 import bcrypt from "bcrypt";
 
-const getAllEmployees = async (req, res) => {
+ export const getAllEmployees = async (req, res) => {
     try {
         const employees = await User.find({ role: "employee" });
         res.json(employees);
@@ -11,7 +11,7 @@ const getAllEmployees = async (req, res) => {
 }
 
 
-const createEmployee = async (req, res)=> {
+export const createEmployee = async (req, res)=> {
     try {
         const { name, email, password } = req.body;
 
@@ -37,7 +37,7 @@ const createEmployee = async (req, res)=> {
 }
 
 
-const deleteEmployee = async (req, res) =>{
+export const deleteEmployee = async (req, res) =>{
     try {
         const deleteE = await User.findByIdAndDelete(req.params.id);
         if(!deleteE){
@@ -50,7 +50,7 @@ const deleteEmployee = async (req, res) =>{
     }
 }
 
-const updateEmployee = async (req, res) =>{ // Email is not editable, only name nad password can be updated
+export const updateEmployee = async (req, res) =>{ // Email is not editable, only name nad password can be updated
     try{
         const {name, password} = req.body;
 
@@ -70,4 +70,3 @@ const updateEmployee = async (req, res) =>{ // Email is not editable, only name 
     }
 }
 
-export default { getAllEmployees, createEmployee, deleteEmployee, updateEmployee };

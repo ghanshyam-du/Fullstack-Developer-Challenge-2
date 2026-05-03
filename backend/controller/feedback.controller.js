@@ -1,7 +1,7 @@
 import Feedback from "../model/feedback.model.js";
 import Assignment from "../model/assignment.model.js";
 
-const feedbackSubmit = async(req, res) =>{
+export const feedbackSubmit = async(req, res) =>{
     try{
         const {comments} = req.body;
         const {assignmentId} = req.params;
@@ -35,7 +35,7 @@ const feedbackSubmit = async(req, res) =>{
 }
 
 
-const getAllFeedbacks = async(req, res) =>{
+export const getAllFeedbacks = async(req, res) =>{
     try{
         const feedback = await Feedback.find().populate("assignment", "review reviewee reviewer").populate("createdBy", "name email");
         res.json(feedback);
@@ -46,4 +46,3 @@ const getAllFeedbacks = async(req, res) =>{
     }
 }
 
-export default { feedbackSubmit, getAllFeedbacks };

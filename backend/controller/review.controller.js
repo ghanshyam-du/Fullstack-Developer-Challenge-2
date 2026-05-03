@@ -1,6 +1,6 @@
 import Review from "../model/reviews.model.js";
 
-const getAllReviews = async (req, res) => {
+export const getAllReviews = async (req, res) => {
     try {
         const reviews = await Review.find().populate("createdBy", "name email");
         res.json(reviews);
@@ -9,7 +9,7 @@ const getAllReviews = async (req, res) => {
     }
 }
 
-const createReview = async (req, res)   => {
+export const createReview = async (req, res)   => {
     try{
         const {title, description} = req.body;
 
@@ -25,10 +25,10 @@ const createReview = async (req, res)   => {
     }
 }
 
-const updateReview = async (req, res)=>{
+export const updateReview = async (req, res)=>{
     try{
         const {title, description} = req.body;
-        const review = await Review.findByIdAndDelete(req.params.id, {title, description}, {new:true});
+        const review = await Review.findByIdAndUpdate(req.params.id, {title, description}, {new:true});
 
         if(!review){
             return res.status(400).json({message: "Review Not found"});
@@ -40,4 +40,3 @@ const updateReview = async (req, res)=>{
     }
 };
 
-export default { getAllReviews, createReview, updateReview };
