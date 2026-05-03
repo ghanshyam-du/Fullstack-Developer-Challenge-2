@@ -2,6 +2,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/connection.js';
 import authRoutes from "./routes/auth.routes.js";
+import assignmentRoutes from "./routes/assignment.routes.js";
+import employeeRoutes from "./routes/employee.routes.js";
+import feedbackRoutes from "./routes/feedback.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+
+
 dotenv.config();
 
 const app = express();
@@ -12,7 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/api/auth", authRoutes);
-
+app.use("/api/assignments", assignmentRoutes);
+app.use("/api/employees", employeeRoutes);
+app.use("/api/feedbacks", feedbackRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 connectDB()
 .then(() => {

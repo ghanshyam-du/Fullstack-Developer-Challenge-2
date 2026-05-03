@@ -34,7 +34,7 @@ const getMyAssignment = async (req, res)=>{
 
 
 
-getAllAssignments = async (req, res) => {
+const getAllAssignments = async (req, res) => {
     try{
         const assignements = await Assignment.find().populate("review", "title description").populate("reviewer", "name email").populate("reviewee", "name email");
         res.json(assignements);

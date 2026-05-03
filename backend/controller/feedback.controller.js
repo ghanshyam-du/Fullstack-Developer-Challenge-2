@@ -1,5 +1,5 @@
-import Feedback from "../model/feedback.model";
-import Assignment from "../model/assignment.model";
+import Feedback from "../model/feedback.model.js";
+import Assignment from "../model/assignment.model.js";
 
 const feedbackSubmit = async(req, res) =>{
     try{
