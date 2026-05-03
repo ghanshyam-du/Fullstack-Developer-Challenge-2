@@ -51,7 +51,7 @@ export const deleteEmployee = async (req, res) =>{ // for admin
 }
 
 export const updateEmployee = async (req, res) =>{ // Email is not editable, only name nad password can be updated
-    try{    //for both
+    try{    //for employee 
         const {name, password} = req.body;
 
         const updateData = {name};
