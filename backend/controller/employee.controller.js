@@ -1,7 +1,7 @@
 import User from "../model/user.model.js";
 import bcrypt from "bcrypt";
 
- export const getAllEmployees = async (req, res) => {
+ export const getAllEmployees = async (req, res) => { // for admin
     try {
         const employees = await User.find({ role: "employee" });
         res.json(employees);
@@ -11,7 +11,7 @@ import bcrypt from "bcrypt";
 }
 
 
-export const createEmployee = async (req, res)=> {
+export const createEmployee = async (req, res)=> { //for admin
     try {
         const { name, email, password } = req.body;
 
@@ -37,7 +37,7 @@ export const createEmployee = async (req, res)=> {
 }
 
 
-export const deleteEmployee = async (req, res) =>{
+export const deleteEmployee = async (req, res) =>{ // for admin
     try {
         const deleteE = await User.findByIdAndDelete(req.params.id);
         if(!deleteE){
@@ -51,7 +51,7 @@ export const deleteEmployee = async (req, res) =>{
 }
 
 export const updateEmployee = async (req, res) =>{ // Email is not editable, only name nad password can be updated
-    try{
+    try{    //for both
         const {name, password} = req.body;
 
         const updateData = {name};
@@ -63,7 +63,7 @@ export const updateEmployee = async (req, res) =>{ // Email is not editable, onl
         }
 
         const updatedEmployee = await User.findByIdAndUpdate(req.params.id, updateData, {new: true});
-       req.json({message: "employee updated successfully", employee: updatedEmployee});
+        res.json({message: "employee updated successfully", employee: updatedEmployee});
 
     } catch (error) {
         res.status(500).json({ message: error.message });
