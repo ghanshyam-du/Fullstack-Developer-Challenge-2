@@ -8,6 +8,9 @@ const AdminDashboard = () => {
     const [Employees, getEmployees] = useState([]);
     const [Id, setDeleteId] = useState("");
     const [reviewData, setReviewData] = useState({ title: "", description: "", createdBy: "" });
+    const [Reviews, getReviews] = useState([]);
+    const [updateReview, setUpdateReview] = useState({ title: "", description: "" });
+
 
 
 
@@ -63,9 +66,30 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleGetAllReviews = async (e) => {
+        e.preventDefault();
+        try {
+            const allReview = await api.get("/reviews");
+            console.log(allReview.data);
+            getReviews(allReview.data);
+        } catch (error) {
+            console.error(error);
+            alert(error.response.data.message || "Failed to fetch reviews");
+        }
+    };
 
-
-
+    const handleUpdateReview = async (id) => {
+        try {
+            await api.put(`/reviews/${id}`, {
+                title: reviewData.title,
+                description: reviewData.description
+            });
+            handleGetAllReviews();
+        } catch (error) {
+            console.error(error);
+            alert(error.response.data.message || "Failed to update review");
+        }
+    };
 
     return (
         <div>
@@ -143,6 +167,35 @@ const AdminDashboard = () => {
                     <button type="submit">Create Review</button>
                 </form>
             </div>
+
+
+            <div>
+                <h3>All Reviews</h3>
+                <button onClick={handleGetAllReviews}>Fetch Reviews</button>
+                <ul>
+                    {Reviews.map((review) => (
+                        <li key={review._id}>{review.title} - {review.description}</li>
+                    ))}
+                </ul>
+
+            </div>
+
+            {/* <div>
+                <h3>Update Review</h3>
+                <input
+                    type="text"
+                    placeholder="Title"
+                    value={reviewData.title}
+                    onChange={(e) => setReviewData({ ...reviewData, title: e.target.value })}
+                />
+                <input
+                    type="text"
+                    placeholder="Description"
+                    value={reviewData.description}
+                    onChange={(e) => setReviewData({ ...reviewData, description: e.target.value })}
+                />
+                <button onClick={() => handleUpdateReview(reviewData._id)}>Update Review</button>
+            </div> */}
 
         </div>
 
