@@ -10,22 +10,23 @@ const AdminDashboard = () => {
     const [newEmp, setNewEmp]         = useState({ name: "", email: "", password: "" });
     const [reviews, setReviews]       = useState([]);
     const [newReview, setNewReview]   = useState({ title: "", description: "" });
-    const [assignment, setAssignment] = useState({ review: "", reviewer: "", reviewee: "" });
+    const [assignment, setAssignment] = useState([]);
     const [message, setMessage]       = useState("");
 
     useEffect(() => {
         fetchEmployees();
         fetchReviews();
+        fetchAssignments();
     }, []);
 
     const fetchEmployees = async () => {
-        const res = await api.get("/employees");
-        setEmployees(res.data);
+        const allEmployee = await api.get("/employees");
+        setEmployees(allEmployee.data);
     };
 
     const fetchReviews = async () => {
-        const res = await api.get("/reviews");
-        setReviews(res.data);
+        const allReviews = await api.get("/reviews");
+        setReviews(allReviews.data);
     };
 
     const handleCreateEmployee = async (e) => {
@@ -68,12 +69,19 @@ const AdminDashboard = () => {
             await api.post("/assignments", assignment);
             setMessage("Assignment created");
             setAssignment({ review: "", reviewer: "", reviewee: "" });
+            fetchAssignments();
         } catch (err) {
             setMessage(err.response?.data?.message || "Error");
         }
     };
 
-    const handleViewAllAssignments = () => {
+    const fetchAssignments = async () => {
+        try {
+            const allAssignments = await api.get("/assignments/all");
+            setAssignment(allAssignments.data);
+        } catch (err) {
+            console.error("Error fetching assignments:", err.response?.data?.message || err.message);
+        }
         
     }
 
@@ -179,8 +187,24 @@ const AdminDashboard = () => {
 
                 <button type="submit">Assign</button>
             </form>
-        </div>
-    );
+
+                <h3>All Assignments</h3>
+                <table border="1" cellPadding="8" style={{ width: "100%", marginBottom: "20px" }}>
+                    <thead>
+                        <tr><th>Review</th><th>Reviewer</th><th>Reviewee</th></tr>
+                    </thead>
+                    <tbody>
+                        {assignment.map((assign) => (
+                            <tr key={assign._id}>
+                                <td>{assign.review.title}</td>
+                                <td>{assign.reviewer.name}</td>
+                                <td>{assign.reviewee.name}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
 
 }
 export default AdminDashboard;
