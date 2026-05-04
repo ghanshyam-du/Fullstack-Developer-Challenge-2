@@ -50,7 +50,7 @@ const EmployeeDashboard = () => {
                                         Give Feedback
                                     </button>
                                 ) : (
-                                    <span>✅ Submitted</span>
+                                    <span>Submitted</span>
                                 )}
                             </td>
                         </tr>
