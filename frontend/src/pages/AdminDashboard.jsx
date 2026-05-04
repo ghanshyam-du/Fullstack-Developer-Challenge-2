@@ -5,13 +5,13 @@ import api from "../api/axios.js";
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-  
-    const [employees, setEmployees]   = useState([]);
-    const [newEmp, setNewEmp]         = useState({ name: "", email: "", password: "" });
-    const [reviews, setReviews]       = useState([]);
-    const [newReview, setNewReview]   = useState({ title: "", description: "" });
+
+    const [employees, setEmployees] = useState([]);
+    const [newEmp, setNewEmp] = useState({ name: "", email: "", password: "" });
+    const [reviews, setReviews] = useState([]);
+    const [newReview, setNewReview] = useState({ title: "", description: "" });
     const [assignment, setAssignment] = useState([]);
-    const [message, setMessage]       = useState("");
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         fetchEmployees();
@@ -51,9 +51,9 @@ const AdminDashboard = () => {
         e.preventDefault();
         try {
             const reviewData = {
-            ...newReview,
-            createdBy: localStorage.getItem("id") 
-        };
+                ...newReview,
+                createdBy: localStorage.getItem("id")
+            };
             await api.post("/reviews", reviewData);
             setMessage("Review created");
             setNewReview({ title: "", description: "", createdBy: "" });
@@ -82,15 +82,15 @@ const AdminDashboard = () => {
         } catch (err) {
             console.error("Error fetching assignments:", err.response?.data?.message || err.message);
         }
-        
+
     }
 
-     const handleLogout = () => {
+    const handleLogout = () => {
         localStorage.clear();
         navigate("/");
     };
 
-     return (
+    return (
         <div style={{ padding: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <h2>Admin Dashboard</h2>
@@ -104,9 +104,9 @@ const AdminDashboard = () => {
             <h3>Employees</h3>
 
             <form onSubmit={handleCreateEmployee} style={{ marginBottom: "10px" }}>
-                <input placeholder="Name"     value={newEmp.name}
+                <input placeholder="Name" value={newEmp.name}
                     onChange={(e) => setNewEmp({ ...newEmp, name: e.target.value })} required />
-                <input placeholder="Email"    value={newEmp.email}
+                <input placeholder="Email" value={newEmp.email}
                     onChange={(e) => setNewEmp({ ...newEmp, email: e.target.value })} required />
                 <input placeholder="Password" value={newEmp.password} type="password"
                     onChange={(e) => setNewEmp({ ...newEmp, password: e.target.value })} required />
@@ -135,10 +135,10 @@ const AdminDashboard = () => {
             <h3>Performance Reviews</h3>
 
             <form onSubmit={handleCreateReview} style={{ marginBottom: "10px" }}>
-                <input placeholder="Title"       value={newReview.title}
+                <input placeholder="Title" value={newReview.title}
                     onChange={(e) => setNewReview({ ...newReview, title: e.target.value })} required />
                 <input placeholder="Description" value={newReview.description}
-                    onChange={(e) => setNewReview({ ...newReview, description: e.target.value })} required /> 
+                    onChange={(e) => setNewReview({ ...newReview, description: e.target.value })} required />
                 <button type="submit">Create Review</button>
             </form>
 
@@ -188,23 +188,23 @@ const AdminDashboard = () => {
                 <button type="submit">Assign</button>
             </form>
 
-                <h3>All Assignments</h3>
-                <table border="1" cellPadding="8" style={{ width: "100%", marginBottom: "20px" }}>
-                    <thead>
-                        <tr><th>Review</th><th>Reviewer</th><th>Reviewee</th></tr>
-                    </thead>
-                    <tbody>
-                        {assignment.map((assign) => (
-                            <tr key={assign._id}>
-                                <td>{assign.review.title}</td>
-                                <td>{assign.reviewer.name}</td>
-                                <td>{assign.reviewee.name}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        );
+            <h3>All Assignments</h3>
+            <table border="1" cellPadding="8" style={{ width: "100%", marginBottom: "20px" }}>
+                <thead>
+                    <tr><th>Review</th><th>Reviewer</th><th>Reviewee</th></tr>
+                </thead>
+                <tbody>
+                    {assignment.map((assign) => (
+                        <tr key={assign._id}>
+                            <td>{assign.review.title}</td>
+                            <td>{assign.reviewer.name}</td>
+                            <td>{assign.reviewee.name}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
 
 }
 export default AdminDashboard;
