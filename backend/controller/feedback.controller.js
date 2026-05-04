@@ -1,7 +1,7 @@
 import Feedback from "../model/feedback.model.js";
 import Assignment from "../model/assignment.model.js";
 
-export const feedbackSubmit = async(req, res) =>{
+export const feedbackSubmit = async(req, res) =>{// for employee
     try{
         const {comments} = req.body;
         const {assignmentId} = req.params;
@@ -35,7 +35,7 @@ export const feedbackSubmit = async(req, res) =>{
 }
 
 
-export const getAllFeedbacks = async(req, res) =>{
+export const getAllFeedbacks = async(req, res) =>{ // for admin
     try{
         const feedback = await Feedback.find().populate("assignment", "review reviewee reviewer").populate("createdBy", "name email");
         res.json(feedback);

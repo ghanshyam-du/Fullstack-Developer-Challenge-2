@@ -1,6 +1,6 @@
 import Assignment from "../model/assignment.model.js";
 
-export const createAssignment = async (req, res) =>{
+export const createAssignment = async (req, res) =>{ // for admin
     try{
         const {review, reviewer, reviewee} = req.body;
 
@@ -23,7 +23,7 @@ export const createAssignment = async (req, res) =>{
 }
 
 
-export const getMyAssignment = async (req, res)=>{
+export const getMyAssignment = async (req, res)=>{ // for employee
     try{
         const assignements = await Assignment.find({ reviewer: req.user.userId }).populate("review", "title description").populate("reviewee", "name email");
         res.json(assignements);
@@ -34,7 +34,7 @@ export const getMyAssignment = async (req, res)=>{
 
 
 
-export const getAllAssignments = async (req, res) => {
+export const getAllAssignments = async (req, res) => { // for admin
     try{
         const assignements = await Assignment.find().populate("review", "title description").populate("reviewer", "name email").populate("reviewee", "name email");
         res.json(assignements);

@@ -7,6 +7,7 @@ const AdminDashboard = () => {
     const [newEmployee, setNewEmployee] = useState({ name: "", email: "", password: "" });
     const [Employees, getEmployees] = useState([]);
     const [Id, setDeleteId] = useState("");
+    const [reviewData, setReviewData] = useState({ title: "", description: "", createdBy: "" });
 
 
 
@@ -42,6 +43,27 @@ const AdminDashboard = () => {
             alert(error.response.data.message || "Failed to delete employee");
         }
     };
+
+
+    const handleCreateReview = async (e) => {
+        e.preventDefault();
+
+        try {
+            await api.post("/reviews", {
+                title: reviewData.title,
+                description: reviewData.description,
+                createdBy: localStorage.getItem("id"),
+            });
+
+            alert("Review Created Successfully");
+        } catch (error) {
+            console.error(error);
+            console.log("Review Data:", reviewData);
+            alert(error.response.data.message || "Failed to create review");    
+        }
+    };
+
+
 
 
 
@@ -95,9 +117,32 @@ const AdminDashboard = () => {
                     onChange={(e) => setDeleteId(e.target.value)}
                 />
                 <button onClick={() => handleDeleteEmployee(Id)}>Delete Employee</button>
-                
+
             </div>
 
+            <div>
+                <h3>Create Review</h3>
+                <form onSubmit={handleCreateReview}>
+                    <input
+                        type="text"
+                        placeholder="Title"
+                        value={reviewData.title}
+                        onChange={(e) => setReviewData({ ...reviewData, title: e.target.value })}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Description"
+                        value={reviewData.description}
+                        onChange={(e) => setReviewData({ ...reviewData, description: e.target.value })}
+                    />
+                    <input
+                        type="text"
+                        value={localStorage.getItem("id")}
+                        disabled
+                    />
+                    <button type="submit">Create Review</button>
+                </form>
+            </div>
 
         </div>
 
