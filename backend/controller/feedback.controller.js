@@ -35,14 +35,22 @@ export const feedbackSubmit = async(req, res) =>{// for employee
 }
 
 
-export const getAllFeedbacks = async(req, res) =>{ // for admin
-    try{
-        const feedback = await Feedback.find().populate("assignment", "review reviewee reviewer").populate("createdBy", "name email");
-        res.json(feedback);
+export const getAllFeedbacks = async (req, res) => { // for admin
+    try {
+        const feedbacks = await Feedback.find()
+            .populate({
+                path: "assignment",
+                populate: [
+                    { path: "review",   select: "title" },
+                    { path: "reviewer", select: "name" },
+                    { path: "reviewee", select: "name" }
+                ]
+            });
+
+        res.json(feedbacks);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-    catch(error){
-        console.error(error);
-        res.status(500).json({message: "Internal server error"});
-    }
-}
+};
 

@@ -11,12 +11,14 @@ const AdminDashboard = () => {
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState({ title: "", description: "" });
     const [assignment, setAssignment] = useState([]);
+    const [feedbacks, setFeedbacks] = useState([]);
     const [message, setMessage] = useState("");
 
     useEffect(() => {
         fetchEmployees();
         fetchReviews();
         fetchAssignments();
+        fetchFeedbacks();
     }, []);
 
     const fetchEmployees = async () => {
@@ -28,6 +30,12 @@ const AdminDashboard = () => {
         const allReviews = await api.get("/reviews");
         setReviews(allReviews.data);
     };
+
+    const fetchFeedbacks = async () => {
+        const allFeedbacks = await api.get("/feedbacks");
+        setFeedbacks(allFeedbacks.data);
+        console.log(allFeedbacks.data);
+    }
 
     const handleCreateEmployee = async (e) => {
         e.preventDefault();
@@ -59,7 +67,7 @@ const AdminDashboard = () => {
             setNewReview({ title: "", description: "", createdBy: "" });
             fetchReviews();
         } catch (err) {
-            setMessage(err.response?.data?.message || "Error");
+            setMessage(err.response?.data?.message || "unable to create review");
         }
     };
 
@@ -71,7 +79,7 @@ const AdminDashboard = () => {
             setAssignment({ review: "", reviewer: "", reviewee: "" });
             fetchAssignments();
         } catch (err) {
-            setMessage(err.response?.data?.message || "Error");
+            setMessage(err.response?.data?.message || "unable to create assignment");
         }
     };
 
@@ -203,6 +211,32 @@ const AdminDashboard = () => {
                     ))}
                 </tbody>
             </table>
+
+            <hr />
+            <h3>All Feedbacks</h3>
+            <table border="1" cellPadding="8" style={{ width: "100%", marginBottom: "20px" }}>
+                <thead>
+                    <tr><th>Review</th><th>Reviewer</th><th>Reviewee</th><th>Comments</th></tr>
+                </thead>
+                <tbody>
+                    {feedbacks.length === 0 ? (
+                        <tr><td colSpan="5" style={{ textAlign: "center" }}>No feedbacks yet</td></tr>
+                    ) : (
+                        feedbacks.map((fb) => (
+                            <tr key={fb._id}>
+                                <td>{fb.assignment?.review?.title}</td>
+                                <td>{fb.assignment?.reviewer?.name}</td>
+                                <td>{fb.assignment?.reviewee?.name}</td>
+                                <td>{fb.comments}</td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
+
+
+
+
         </div>
     );
 
