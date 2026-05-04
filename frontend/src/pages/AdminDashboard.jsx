@@ -1,207 +1,186 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios.js";
 
 
 const AdminDashboard = () => {
-    const [newEmployee, setNewEmployee] = useState({ name: "", email: "", password: "" });
-    const [Employees, getEmployees] = useState([]);
-    const [Id, setDeleteId] = useState("");
-    const [reviewData, setReviewData] = useState({ title: "", description: "", createdBy: "" });
-    const [Reviews, getReviews] = useState([]);
-    const [updateReview, setUpdateReview] = useState({ title: "", description: "" });
+    const navigate = useNavigate();
+  
+    const [employees, setEmployees]   = useState([]);
+    const [newEmp, setNewEmp]         = useState({ name: "", email: "", password: "" });
+    const [reviews, setReviews]       = useState([]);
+    const [newReview, setNewReview]   = useState({ title: "", description: "" });
+    const [assignment, setAssignment] = useState({ review: "", reviewer: "", reviewee: "" });
+    const [message, setMessage]       = useState("");
 
+    useEffect(() => {
+        fetchEmployees();
+        fetchReviews();
+    }, []);
 
-
-
-    const handleCreateEmloyee = async (e) => {
-        e.preventDefault();
-        try {
-            await api.post("/employees", newEmployee);
-            alert("Employee created successfully");
-            setNewEmployee({ name: "", email: "", password: "" });
-            fetchAllEmployees();
-        } catch (error) {
-            alert(error.response.data.message || "Failed to create employee");
-        }
-
+    const fetchEmployees = async () => {
+        const res = await api.get("/employees");
+        setEmployees(res.data);
     };
 
-    const fetchAllEmployees = async (e) => {
+    const fetchReviews = async () => {
+        const res = await api.get("/reviews");
+        setReviews(res.data);
+    };
+
+    const handleCreateEmployee = async (e) => {
         e.preventDefault();
         try {
-            const allEmployees = await api.get("/employees");
-            getEmployees(allEmployees.data);
+            await api.post("/employees", newEmp);
+            setMessage("Employee created");
+            setNewEmp({ name: "", email: "", password: "" });
+            fetchEmployees();
+        } catch (err) {
+            setMessage(err.response?.data?.message || "Error");
         }
-        catch (error) {
-            alert(error.response.data.message || "Failed to fetch employees");
-        }
-    }
+    };
 
     const handleDeleteEmployee = async (id) => {
-        try {
-            await api.delete(`/employees/${id}`);
-            fetchAllEmployees();
-        } catch (error) {
-            alert(error.response.data.message || "Failed to delete employee");
-        }
+        await api.delete(`/employees/${id}`);
+        setMessage("Employee deleted");
+        fetchEmployees();
     };
-
 
     const handleCreateReview = async (e) => {
         e.preventDefault();
-
         try {
-            await api.post("/reviews", {
-                title: reviewData.title,
-                description: reviewData.description,
-                createdBy: localStorage.getItem("id"),
-            });
-
-            alert("Review Created Successfully");
-        } catch (error) {
-            console.error(error);
-            console.log("Review Data:", reviewData);
-            alert(error.response.data.message || "Failed to create review");    
+            const reviewData = {
+            ...newReview,
+            createdBy: localStorage.getItem("id") 
+        };
+            await api.post("/reviews", reviewData);
+            setMessage("Review created");
+            setNewReview({ title: "", description: "", createdBy: "" });
+            fetchReviews();
+        } catch (err) {
+            setMessage(err.response?.data?.message || "Error");
         }
     };
 
-    const handleGetAllReviews = async (e) => {
+    const handleAssign = async (e) => {
         e.preventDefault();
         try {
-            const allReview = await api.get("/reviews");
-            console.log(allReview.data);
-            getReviews(allReview.data);
-        } catch (error) {
-            console.error(error);
-            alert(error.response.data.message || "Failed to fetch reviews");
+            await api.post("/assignments", assignment);
+            setMessage("Assignment created");
+            setAssignment({ review: "", reviewer: "", reviewee: "" });
+        } catch (err) {
+            setMessage(err.response?.data?.message || "Error");
         }
     };
 
-    const handleUpdateReview = async (id) => {
-        try {
-            await api.put(`/reviews/${id}`, {
-                title: reviewData.title,
-                description: reviewData.description
-            });
-            handleGetAllReviews();
-        } catch (error) {
-            console.error(error);
-            alert(error.response.data.message || "Failed to update review");
-        }
+    const handleViewAllAssignments = () => {
+        
+    }
+
+     const handleLogout = () => {
+        localStorage.clear();
+        navigate("/");
     };
 
-    return (
-        <div>
-            <div>
+     return (
+        <div style={{ padding: "20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <h2>Admin Dashboard</h2>
-                <h3>Create New Employee</h3>
-                <form onSubmit={handleCreateEmloyee}>
-                    <input
-                        type="text"
-                        placeholder="Name"
-                        value={newEmployee.name}
-                        onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
-                    />
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={newEmployee.email}
-                        onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={newEmployee.password}
-                        onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-                    />
-                    <button type="submit">Create Employee</button>
-                </form>
+                <button onClick={handleLogout}>Logout</button>
             </div>
 
+            {message && <p style={{ color: "green" }}>{message}</p>}
 
-            <div>
-                <h3>All Employees</h3>
+            {/* ── EMPLOYEES ── */}
+            <hr />
+            <h3>Employees</h3>
 
-                <button onClick={fetchAllEmployees}>Fetch Employees</button>
-                <ul>
-                    {Employees.map((employee) => (
-                        <li key={employee._id}>{employee.name} - {employee.email}</li>
+            <form onSubmit={handleCreateEmployee} style={{ marginBottom: "10px" }}>
+                <input placeholder="Name"     value={newEmp.name}
+                    onChange={(e) => setNewEmp({ ...newEmp, name: e.target.value })} required />
+                <input placeholder="Email"    value={newEmp.email}
+                    onChange={(e) => setNewEmp({ ...newEmp, email: e.target.value })} required />
+                <input placeholder="Password" value={newEmp.password} type="password"
+                    onChange={(e) => setNewEmp({ ...newEmp, password: e.target.value })} required />
+                <button type="submit">Add Employee</button>
+            </form>
+
+            <table border="1" cellPadding="8" style={{ width: "100%", marginBottom: "20px" }}>
+                <thead>
+                    <tr><th>Name</th><th>Email</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    {employees.map((emp) => (
+                        <tr key={emp._id}>
+                            <td>{emp.name}</td>
+                            <td>{emp.email}</td>
+                            <td>
+                                <button onClick={() => handleDeleteEmployee(emp._id)}>Delete</button>
+                            </td>
+                        </tr>
                     ))}
-                </ul>
+                </tbody>
+            </table>
 
-            </div>
+            {/* ── REVIEWS ── */}
+            <hr />
+            <h3>Performance Reviews</h3>
 
-            <div>
-                <h3>Delete Employee</h3>
-                <input
-                    type="text"
-                    placeholder="Employee ID"
-                    value={Id}
-                    onChange={(e) => setDeleteId(e.target.value)}
-                />
-                <button onClick={() => handleDeleteEmployee(Id)}>Delete Employee</button>
+            <form onSubmit={handleCreateReview} style={{ marginBottom: "10px" }}>
+                <input placeholder="Title"       value={newReview.title}
+                    onChange={(e) => setNewReview({ ...newReview, title: e.target.value })} required />
+                <input placeholder="Description" value={newReview.description}
+                    onChange={(e) => setNewReview({ ...newReview, description: e.target.value })} required /> 
+                <button type="submit">Create Review</button>
+            </form>
 
-            </div>
-
-            <div>
-                <h3>Create Review</h3>
-                <form onSubmit={handleCreateReview}>
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        value={reviewData.title}
-                        onChange={(e) => setReviewData({ ...reviewData, title: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Description"
-                        value={reviewData.description}
-                        onChange={(e) => setReviewData({ ...reviewData, description: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        value={localStorage.getItem("id")}
-                        disabled
-                    />
-                    <button type="submit">Create Review</button>
-                </form>
-            </div>
-
-
-            <div>
-                <h3>All Reviews</h3>
-                <button onClick={handleGetAllReviews}>Fetch Reviews</button>
-                <ul>
-                    {Reviews.map((review) => (
-                        <li key={review._id}>{review.title} - {review.description}</li>
+            <table border="1" cellPadding="8" style={{ width: "100%", marginBottom: "20px" }}>
+                <thead>
+                    <tr><th>Title</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    {reviews.map((rev) => (
+                        <tr key={rev._id}>
+                            <td>{rev.title}</td>
+                            <td>{rev.description}</td>
+                        </tr>
                     ))}
-                </ul>
+                </tbody>
+            </table>
 
-            </div>
+            {/* ── ASSIGNMENTS ── */}
+            <hr />
+            <h3>Assign Reviewer</h3>
 
-            {/* <div>
-                <h3>Update Review</h3>
-                <input
-                    type="text"
-                    placeholder="Title"
-                    value={reviewData.title}
-                    onChange={(e) => setReviewData({ ...reviewData, title: e.target.value })}
-                />
-                <input
-                    type="text"
-                    placeholder="Description"
-                    value={reviewData.description}
-                    onChange={(e) => setReviewData({ ...reviewData, description: e.target.value })}
-                />
-                <button onClick={() => handleUpdateReview(reviewData._id)}>Update Review</button>
-            </div> */}
+            <form onSubmit={handleAssign}>
+                <select value={assignment.review}
+                    onChange={(e) => setAssignment({ ...assignment, review: e.target.value })} required>
+                    <option value="">Select Review</option>
+                    {reviews.map((r) => (
+                        <option key={r._id} value={r._id}>{r.title}</option>
+                    ))}
+                </select>
 
+                <select value={assignment.reviewer}
+                    onChange={(e) => setAssignment({ ...assignment, reviewer: e.target.value })} required>
+                    <option value="">Select Reviewer (gives feedback)</option>
+                    {employees.map((e) => (
+                        <option key={e._id} value={e._id}>{e.name}</option>
+                    ))}
+                </select>
+
+                <select value={assignment.reviewee}
+                    onChange={(e) => setAssignment({ ...assignment, reviewee: e.target.value })} required>
+                    <option value="">Select Reviewee (being reviewed)</option>
+                    {employees.map((e) => (
+                        <option key={e._id} value={e._id}>{e.name}</option>
+                    ))}
+                </select>
+
+                <button type="submit">Assign</button>
+            </form>
         </div>
-
-
-
-    )
+    );
 
 }
 export default AdminDashboard;
